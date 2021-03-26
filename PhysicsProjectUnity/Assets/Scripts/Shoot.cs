@@ -39,7 +39,8 @@ public class Shoot : MonoBehaviour
     public enum GunType
     {
         Pistol,
-        Rocket
+        Rocket,
+        PDW
     }
 
     GunType gunType;
@@ -92,6 +93,12 @@ public class Shoot : MonoBehaviour
             if ((int)gunType != 1)
                 SwitchGun(1);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            if ((int)gunType != 2)
+                SwitchGun(2);
+        }
     }
 
     void SwitchGun(int gunIndex)
@@ -120,6 +127,19 @@ public class Shoot : MonoBehaviour
 
                 break;
             }
+
+            case (int)GunType.PDW:
+            {
+                guns[(int)gunType].SetActive(false);
+                guns[(int)GunType.PDW].SetActive(true);
+
+                gunType = GunType.PDW;
+
+
+
+                break;
+
+            }
         }
     }
 
@@ -142,6 +162,13 @@ public class Shoot : MonoBehaviour
                 case GunType.Rocket:
                 {
                     ShootRocket();
+                    break;
+                }
+
+                case GunType.PDW:
+                {
+                    ShootBullet();
+                    RunGunShotAnimation();
                     break;
                 }
             }
