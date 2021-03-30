@@ -8,6 +8,7 @@ TagManager:
   - EnemySpawner
   - Invincible
   - Interactive
+  - interact
   layers:
   - Default
   - TransparentFX

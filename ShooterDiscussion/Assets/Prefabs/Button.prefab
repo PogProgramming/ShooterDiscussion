@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2966623738125666356}
   m_Layer: 13
   m_Name: Button
-  m_TagString: Untagged
+  m_TagString: interact
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -139,6 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clickedPos: {x: 0, y: 0, z: 0}
   buttonClickSpeed: 5
+  isGettingCallbackToBeReady: 0
   readyToBeClicked: 1
   clickableMaterial: {fileID: 2100000, guid: 7951beb47db8b254eab5be803e159d7a, type: 2}
   unclickableMaterial: {fileID: 2100000, guid: f6f52fd463668b1438674b0a3cd951d0, type: 2}

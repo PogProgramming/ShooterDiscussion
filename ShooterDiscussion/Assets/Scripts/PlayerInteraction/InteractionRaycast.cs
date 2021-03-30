@@ -22,14 +22,13 @@ public class InteractionRaycast : MonoBehaviour
             interactionText.enabled = true;
             if (interactableScript != null)
             {
-
+                if (Input.GetKeyDown(KeyCode.Q)) interactableScript.Interact();
             }
             else
             {
                 interactionText.text = "[Error]";
             }
 
-            if (Input.GetKeyDown(KeyCode.Q)) interactableScript.Interact();
         }
         else
         {
