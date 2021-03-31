@@ -9,6 +9,8 @@ TagManager:
   - Invincible
   - Interactive
   - interact
+  - Button
+  - UIButton
   layers:
   - Default
   - TransparentFX

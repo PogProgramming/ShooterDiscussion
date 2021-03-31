@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     public Transform playerCam;
     public Transform orientation;
 
+    public PlayerAbilities pa;
+
     //Other
     public Rigidbody rb;
 
@@ -49,6 +51,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool looking = true;
 
+    public bool isJumping = false;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -59,6 +63,8 @@ public class PlayerMovement : MonoBehaviour
         playerScale = transform.localScale;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        pa = GetComponent<PlayerAbilities>();
     }
 
 
@@ -71,15 +77,38 @@ public class PlayerMovement : MonoBehaviour
     {
         MyInput();
 
-        if(looking)
+        if (looking)
             Look();
     }
 
     /// <summary>
     /// Find user input. Should put this in its own class but im lazy
     /// </summary>
+    int spaceBarPresses = 0;
     private void MyInput()
     {
+        if (Input.GetKeyDown(KeyCode.Space) && !grounded)
+        {
+            Debug.Log(spaceBarPresses);
+            spaceBarPresses++;
+        }
+
+        if (!grounded)
+        {
+            if (Input.GetKey(KeyCode.Space) && spaceBarPresses >= 1)
+            {
+                pa.useJetpack = true;
+            }
+            else
+            {
+                pa.useJetpack = false;
+            }
+        }
+        else
+        {
+            spaceBarPresses = 0;
+        }
+
         x = Input.GetAxisRaw("Horizontal");
         y = Input.GetAxisRaw("Vertical");
         jumping = Input.GetButton("Jump");
@@ -171,6 +200,7 @@ public class PlayerMovement : MonoBehaviour
         if (grounded && readyToJump)
         {
             readyToJump = false;
+            isJumping = true;
 
             //Add jump forces
             rb.AddForce(Vector2.up * jumpForce * 1.5f);

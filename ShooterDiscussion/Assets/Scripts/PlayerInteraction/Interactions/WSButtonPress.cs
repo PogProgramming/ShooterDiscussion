@@ -5,6 +5,8 @@ using UnityEngine;
 // WorldSpace button press
 public class WSButtonPress : MonoBehaviour
 {
+    bool activeButton = true;
+
     Interactable intCall;
     Vector3 startPos;
     public Vector3 clickedPos;
@@ -26,6 +28,19 @@ public class WSButtonPress : MonoBehaviour
         if (clickedPos == null) gameObject.SetActive(false);
 
         mr = GetComponent<MeshRenderer>();
+    }
+
+    public void SetIsClickable(bool set)
+    {
+        activeButton = set;
+        if (!set)
+        {
+            mr.material = unclickableMaterial;
+        }
+        else
+        {
+            mr.material = clickableMaterial;
+        }
     }
 
     public void ButtonClick(Interactable intCall)
@@ -51,7 +66,7 @@ public class WSButtonPress : MonoBehaviour
                                                   buttonClickSpeed * Time.deltaTime);
 
                 // Add custom wait for response here to know to come back out
-                if (Vector3.Distance(transform.position, clickedPos) < 0.01f)
+                if (Vector3.Distance(transform.position, clickedPos) <= 0.01f)
                 {
                     if (readyToBeClicked && isGettingCallbackToBeReady || readyToBeClicked && !isGettingCallbackToBeReady)
                         clicked = false;
@@ -62,11 +77,16 @@ public class WSButtonPress : MonoBehaviour
                 transform.position = Vector3.Lerp(transform.position, startPos,
                                       buttonClickSpeed * Time.deltaTime * 3);
 
-                if (Vector3.Distance(transform.position, startPos) < 0.01f)
+                if (Vector3.Distance(transform.position, startPos) <= 0.01f)
                 {
-                    clickable = true;
-                    this.intCall.canBeInteracted = clickable; // Tells interactable component that it's finished and ready to invoke UnityEvents
-                    mr.material = clickableMaterial;
+                    if (activeButton)
+                    {
+                        mr.material = clickableMaterial;
+                        clickable = true;
+                    }
+
+                    if (this.intCall != null)
+                        this.intCall.canBeInteracted = clickable; // Tells interactable component that it's finished and ready to invoke UnityEvents
                 }
             }
         }

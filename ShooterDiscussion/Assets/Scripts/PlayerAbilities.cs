@@ -10,6 +10,7 @@ public class PlayerAbilities : MonoBehaviour
 
     //Jetpack
     bool jetpackAbility = true;
+    public bool useJetpack = false; // Being changed by playercontroller
     public float jetpackForce = 20f;
     public float maxJetpackFuel = 100f;
     public float jetpackFuelConsumptionRate = 10f;
@@ -17,7 +18,10 @@ public class PlayerAbilities : MonoBehaviour
     public float currentJetpackFuel = 0f;
     public RectTransform jetpackFuelDisplay = null;
 
-    bool administratorAbilities = true;
+    public bool administratorAbilities = true;
+    public void ToggleAdmin() { administratorAbilities = !administratorAbilities; }
+    public bool IsAdmin() { return administratorAbilities; }
+
 
     bool mosesAbility = false;
     public float mosesRadius = 7f;
@@ -39,7 +43,7 @@ public class PlayerAbilities : MonoBehaviour
     {
         if (jetpackAbility)
         {
-            if (Input.GetKey(KeyCode.E))
+            if (useJetpack) // player controller adjusts
             {
                 if (currentJetpackFuel > 0f)
                 {
