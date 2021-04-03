@@ -10,9 +10,11 @@ public class EnemySpawner : MonoBehaviour
 
     }
 
-    public void SpawnEnemy()
+    public void SpawnEnemy(Transform holder)
     {
         GameObject enemy = Instantiate(enemyPlayer, transform.position, Quaternion.identity);
+        if (holder.GetType() == typeof(Transform)) enemy.transform.parent = holder;
+
         GameObject meshes = enemy.transform.GetChild(0).gameObject;
         SkinnedMeshRenderer[] renderers = meshes.GetComponentsInChildren<SkinnedMeshRenderer>();
 

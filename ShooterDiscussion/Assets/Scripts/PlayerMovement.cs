@@ -22,7 +22,9 @@ public class PlayerMovement : MonoBehaviour
 
     //Movement
     public float moveSpeed = 4500;
-    public float maxSpeed = 20;
+    public float maxSpeed = 10;
+    public float defaultSpeed = 4500;
+    public float defaultMaxSpeed = 10;
     public bool grounded;
     public LayerMask whatIsGround;
 
@@ -89,7 +91,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && !grounded)
         {
-            Debug.Log(spaceBarPresses);
             spaceBarPresses++;
         }
 

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Shoot : MonoBehaviour
 {
+    PlayerMovement playerController;
     // Make guns into array corresponding to enum int
     //public GameObject[] guns; // 0 pistol, 1 rocket, 2 laser
 
@@ -13,6 +14,9 @@ public class Shoot : MonoBehaviour
 
     Animator pistolAnimator;
     Animator rocketAnimator;
+    public float originalCameraFOV = 75.7f;
+    public float zoomedCameraFOV = 40.0f;
+    public float zoomSpeed = 1;
 
     public Image normalCrosshair;
     public Image hitCrosshair;
@@ -20,6 +24,7 @@ public class Shoot : MonoBehaviour
     public GameObject bullet = null;
     public GameObject rocket = null;
     public GameObject orientation = null;
+
     public GameObject gunEndPoint = null; // To help with rotation of bullet
 
     public float cooldown = 0.2f;
@@ -47,12 +52,16 @@ public class Shoot : MonoBehaviour
 
     GunType gunType;
 
+
     void Start()
     {
+        playerController = GetComponent<PlayerMovement>();
         cam = Camera.main;
 
         pistolAnimator = guns[(int)GunType.Pistol].GetComponent<Animator>();
         gunType = GunType.Pistol; // default
+
+        RunGunAimAnimation();
     }
 
     // Update is called once per frame
@@ -60,7 +69,6 @@ public class Shoot : MonoBehaviour
 
     bool crosshairChange = false;
     float crosshairTimer = 0;
-    float crosshairTimeout = 0.1f;
     void Update()
     {
         if (Input.GetMouseButton(0))
@@ -86,7 +94,7 @@ public class Shoot : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            if((int)gunType != 0)
+            if ((int)gunType != 0)
                 SwitchGun(0);
         }
 
@@ -101,6 +109,24 @@ public class Shoot : MonoBehaviour
         //    if ((int)gunType != 2)
         //        SwitchGun(2);
         //}
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            RunGunAimAnimation();
+        }
+
+        if (aimed && gunType == GunType.Pistol)
+        {
+            playerController.moveSpeed = playerController.defaultSpeed / 2;
+            playerController.maxSpeed = playerController.defaultMaxSpeed / 2;
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, zoomedCameraFOV, Time.deltaTime * zoomSpeed);
+        }
+        else
+        {
+            playerController.moveSpeed = playerController.defaultSpeed;
+            playerController.maxSpeed = playerController.defaultMaxSpeed;
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, originalCameraFOV, Time.deltaTime * zoomSpeed);
+        }
     }
 
     void SwitchGun(int gunIndex)
@@ -109,8 +135,10 @@ public class Shoot : MonoBehaviour
         {
             case (int)GunType.Pistol:
             {
-                guns[(int)gunType].SetActive(false);
                 guns[(int)GunType.Pistol].SetActive(true);
+
+                gunEndPoint.transform.parent = guns[(int)GunType.Pistol].transform;
+                guns[(int)gunType].SetActive(false);
 
                 gunType = GunType.Pistol;
 
@@ -119,8 +147,10 @@ public class Shoot : MonoBehaviour
 
             case (int)GunType.Rocket:
             {
-                guns[(int)gunType].SetActive(false);
                 guns[(int)GunType.Rocket].SetActive(true);
+
+                gunEndPoint.transform.parent = guns[(int)GunType.Rocket].transform;
+                guns[(int)gunType].SetActive(false);
 
                 gunType = GunType.Rocket;
 
@@ -129,8 +159,10 @@ public class Shoot : MonoBehaviour
 
             case (int)GunType.PDW:
             {
-                guns[(int)gunType].SetActive(false);
                 guns[(int)GunType.PDW].SetActive(true);
+
+                gunEndPoint.transform.parent = guns[(int)GunType.PDW].transform;
+                guns[(int)gunType].SetActive(false);
 
                 gunType = GunType.PDW;
 
@@ -179,8 +211,35 @@ public class Shoot : MonoBehaviour
 
     void RunGunShotAnimation()
     {
-        pistolAnimator.Play("anim_GunShot", 0, 0f);
+        if (!aimed)
+        {
+            pistolAnimator.Play("anim_GunShot", 0, 0f);
+        }
+        else
+        {
+            pistolAnimator.Play("anim_GunShotAiming", 0, 0f);
+        }
         //anim_GunShot
+    }
+
+    bool aimed = false;
+    void RunGunAimAnimation()
+    {
+        if (gunType != GunType.Pistol) return;
+
+        if (pistolAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1)
+        {
+            if (!aimed)
+            {
+                pistolAnimator.Play("Aim", 0, 0f);
+                aimed = true;
+            }
+            else
+            {
+                pistolAnimator.Play("UnAim", 0, 0f);
+                aimed = false;
+            }
+        }
     }
 
     public void CrosshairHit(bool _set)
@@ -209,7 +268,7 @@ public class Shoot : MonoBehaviour
         if (Physics.Raycast(gunEndPoint.transform.position, cam.transform.forward, out hit, enemyLayer))
         {
             EnemyHealth hp = hit.transform.GetComponentInParent<EnemyHealth>();
-            if(hp != null)
+            if (hp != null)
             {
                 CrosshairHit(true);
                 hp.TakeDamage(gunDamage, hit.normal, gunBulletSpeed, hit.transform.GetComponent<Rigidbody>());

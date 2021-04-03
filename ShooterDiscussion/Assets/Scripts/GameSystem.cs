@@ -10,8 +10,6 @@ public class GameSystem : MonoBehaviour
 
     public GameObject winnerUI;
 
-    bool spawned = false;
-
     public RunSpawners rs = null;
 
     void Start()

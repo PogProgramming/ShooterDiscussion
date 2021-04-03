@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class UIButtonColorToggleChange : MonoBehaviour
 {
-    public bool active = false;
+    public bool active = true;
     Button thisButton = null;
 
     public Color EnabledColour;

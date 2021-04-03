@@ -20,11 +20,7 @@ public class ManualClothConstraints : MonoBehaviour
     bool switchingcoes = false;
     float timer = 0;
 
-    float latchMoveAmount = 5.0f / 100.0f;
-
     bool reachedDesiredPos = false;
-
-    int count = 0;
     void Update()
     {
         for (int i = 0; i < coes.Length; i++)

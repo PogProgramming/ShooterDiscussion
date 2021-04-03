@@ -5,7 +5,7 @@ using UnityEngine;
 // WorldSpace button press
 public class WSButtonPress : MonoBehaviour
 {
-    bool activeButton = true;
+    public bool activeButton = true;
 
     Interactable intCall;
     Vector3 startPos;
