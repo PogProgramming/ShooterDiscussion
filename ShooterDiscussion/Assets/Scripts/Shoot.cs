@@ -131,6 +131,7 @@ public class Shoot : MonoBehaviour
 
     void SwitchGun(int gunIndex)
     {
+        if (aimed) RunGunAimAnimation(false);
         switch (gunIndex)
         {
             case (int)GunType.Pistol:
@@ -230,6 +231,25 @@ public class Shoot : MonoBehaviour
         if (pistolAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1)
         {
             if (!aimed)
+            {
+                pistolAnimator.Play("Aim", 0, 0f);
+                aimed = true;
+            }
+            else
+            {
+                pistolAnimator.Play("UnAim", 0, 0f);
+                aimed = false;
+            }
+        }
+    }
+
+    void RunGunAimAnimation(bool setAim)
+    {
+        if (gunType != GunType.Pistol) return;
+
+        if (pistolAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1)
+        {
+            if (setAim)
             {
                 pistolAnimator.Play("Aim", 0, 0f);
                 aimed = true;
