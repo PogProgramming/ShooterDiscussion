@@ -14,6 +14,8 @@ public class NavMove : MonoBehaviour
 
     EnemyHealth health;
 
+    float timeSinceLastSeen = 0;
+
     void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -28,12 +30,19 @@ public class NavMove : MonoBehaviour
 
         if(Vector3.Distance(playerTransform.position, transform.position) < 20f)
         {
+            agent.isStopped = false;
             agent.SetDestination(playerTransform.position);
             animator.SetFloat("Speed", agent.speed * Time.deltaTime);
+            timeSinceLastSeen = 0f;
         }
         else
         {
-            animator.SetFloat("Speed", 0);
+            if (timeSinceLastSeen > 2f)
+            {
+                agent.isStopped = true;
+                animator.SetFloat("Speed", 0);
+            }
+            else timeSinceLastSeen += Time.deltaTime;
         }
     }
 }

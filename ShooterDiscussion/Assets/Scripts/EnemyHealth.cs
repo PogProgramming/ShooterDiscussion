@@ -14,6 +14,8 @@ public class EnemyHealth : MonoBehaviour
     private bool despawnEngage = false;
     private float despawnTimer = 2f;
 
+    public List<Renderer> renderers = new List<Renderer>(2);
+
     public void TakeDamage(float damage)
     {
         health -= damage;
@@ -44,9 +46,9 @@ public class EnemyHealth : MonoBehaviour
             Death(velocity, gunSpeed, bodyPart);
         }
 
-        if(transform.tag == "Invincible")
+        if (transform.tag == "Invincible")
         {
-            GetComponent<Rigidbody>().AddForce(-velocity.normalized * (gunSpeed / 3), ForceMode.Impulse);
+            GetComponent<Rigidbody>()?.AddForce(-velocity.normalized * (gunSpeed / 3), ForceMode.Impulse);
         }
 
         UpdateHealthBar();
@@ -54,21 +56,28 @@ public class EnemyHealth : MonoBehaviour
 
     private void UpdateHealthBar()
     {
-        if(healthBar != null)
+        if (healthBar != null)
         {
             float width = (health / maxHealth) * 100.0f;
             healthBar.sizeDelta = new Vector2(width, 100);
         }
     }
 
-
     float timer = 0;
+    float dissolveAmount = 0;
     void Update()
     {
         if (despawnEngage)
         {
             timer += Time.deltaTime;
-            if (timer > despawnTimer)
+
+            dissolveAmount = timer / despawnTimer;
+            foreach (Renderer r in renderers)
+            {
+                r.material.SetFloat("_Amount", dissolveAmount);
+            }
+
+            if (timer >= despawnTimer)
             {
                 Destroy(gameObject);
                 GameObject.Find("EventSystem").GetComponent<GameSystem>().AdjustKills(1);
@@ -78,7 +87,7 @@ public class EnemyHealth : MonoBehaviour
 
     public void Death()
     {
-        if(transform.tag == "Invincible")
+        if (transform.tag == "Invincible")
         {
             health = maxHealth;
         }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class WSButtonPress : MonoBehaviour
 {
     public bool activeButton = true;
+    public bool IsActive() { return activeButton; }
 
     Interactable intCall;
     Vector3 startPos;
@@ -16,12 +17,16 @@ public class WSButtonPress : MonoBehaviour
     bool clicked = false;
     bool clickable = true;
 
+    public bool HasBeenClicked() { return !clickable; }
+
     public bool isGettingCallbackToBeReady = false;
     public bool readyToBeClicked = true;
 
-    private MeshRenderer mr;
+    public MeshRenderer mr;
     public Material clickableMaterial;
     public Material unclickableMaterial;
+
+    
     void Start()
     {
         startPos = transform.position;

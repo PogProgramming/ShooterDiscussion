@@ -23,6 +23,8 @@ public class InteractionRaycast : MonoBehaviour
     public Color originalUnlockedButtonColor;
 
     public Color accessDeniedSelectedButtonColor;
+
+    WSButtonPress lastButtonPressed = null;
     void Start()
     {
         pa = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerAbilities>();
@@ -34,19 +36,30 @@ public class InteractionRaycast : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 5.0f, interactionLayer))
         {
-            interactionText.text = InteractionHintText;
-            interactionText.color = originalUnlockedButtonColor;
-
             Interactable interactableScript = hit.transform.GetComponent<Interactable>();
             if (interactableScript != null)
             {
-                if (hit.transform.GetComponent<WSButtonPress>() && hit.transform.GetComponent<WSButtonPress>().activeButton == false)
+                bool enableInteractionTextCheck = true; // default to true, if problem or WSButton was clicked set to false
+                interactionText.text = InteractionHintText;
+                if (hit.transform.GetComponent<WSButtonPress>() != null)
                 {
-                    interactionText.text = "This button is locked";
-                    interactionText.color = accessDeniedSelectedButtonColor;
-                }
-                interactionText.enabled = true;
+                    // This may cause a problem if buttons are directly next to each other
+                    if (lastButtonPressed == null) lastButtonPressed = hit.transform.GetComponent<WSButtonPress>();
 
+                    lastButtonPressed.mr.material.SetFloat("_OutlineWidth", 0.07f); // Sets the shader's property
+                    interactionText.color = originalUnlockedButtonColor;
+
+                    // If the button is inactive (locked)
+                    if (lastButtonPressed.activeButton == false)
+                    {
+                        interactionText.text = "This button is locked";
+                        interactionText.color = accessDeniedSelectedButtonColor;
+                    }
+
+                    if (lastButtonPressed.HasBeenClicked()) enableInteractionTextCheck = false; // WS button was clicked
+                }
+
+                if (enableInteractionTextCheck) interactionText.enabled = true;
                 if (Input.GetKeyDown(KeyCode.Q)) interactableScript.Interact();
             }
 
@@ -81,6 +94,12 @@ public class InteractionRaycast : MonoBehaviour
         }
         else
         {
+            if (lastButtonPressed)
+            {
+                lastButtonPressed.mr.material.SetFloat("_OutlineWidth", 0f);
+                lastButtonPressed = null;
+            }
+
             interactionText.enabled = false;
             if (UIButtonWasLastSelected == true)
             {
